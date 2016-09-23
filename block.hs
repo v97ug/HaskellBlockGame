@@ -1,6 +1,6 @@
 import FreeGame
 import Direction
-import qualified Debug.Trace as D
+-- import qualified Debug.Trace as D
 
 data State = State{
   ballPos :: Vec2,
@@ -28,20 +28,23 @@ update state = do
 
   escape <- keyPress KeyEscape
   tick
+
+  -- 反射の実装
   unless escape $
-    let isReflect = reflectable bar (ballPos state)
-        direction = if isReflect then
+    let nextBallP = move (ballPos state) (dir state)
+        willReflect = reflectable bar nextBallP
+        (direction, ballP) = if willReflect then
           case  dir state of
-            RightDown -> RightUp
-            RightUp -> LeftUp
-            LeftUp -> LeftDown
-            LeftDown -> RightDown
-          else dir state
-        ballP = case direction of
-          RightDown -> toRightUp (ballPos state)
-          RightUp -> toLeftUp (ballPos state)
-          LeftUp -> toLeftDown (ballPos state)
-          LeftDown -> toRightDown (ballPos state)
+            RightDown -> (RightUp, ballPos state)
+            RightUp -> (LeftUp, ballPos state)
+            LeftUp -> (LeftDown, ballPos state)
+            LeftDown -> (RightDown, ballPos state)
+          else (dir state, nextBallP)
+        -- ballP = case direction of
+        --   RightDown -> toRightUp (ballPos state)
+        --   RightUp -> toLeftUp (ballPos state)
+        --   LeftUp -> toLeftDown (ballPos state)
+        --   LeftDown -> toRightDown (ballPos state)
     in update state{ ballPos = ballP, dir = direction}
 
 reflectable :: Bar -> Vec2 -> Bool
