@@ -4,7 +4,7 @@ import Direction
 
 data Ball = Ball{
   ballPos :: Vec2,
-  dir :: Dir,
+  dir :: (Horizontal, Vertical),
   radius :: Double
 }
 
@@ -30,10 +30,10 @@ update ball = do
         willReflect = reflectable bar ball{ballPos = nextBallP}
         (direction, ballP) = if willReflect then
           case  dir ball of
-            RightDown -> (RightUp, ballPos ball)
-            RightUp -> (LeftUp, ballPos ball)
-            LeftUp -> (LeftDown, ballPos ball)
-            LeftDown -> (RightDown, ballPos ball)
+            (R, Down) -> ((R,Up), ballPos ball)
+            (R, Up) -> ((L, Up), ballPos ball)
+            (L, Up) -> ((L, Down), ballPos ball)
+            (L, Down) -> ((R, Down), ballPos ball)
           else (dir ball, nextBallP)
     in update ball{ ballPos = ballP, dir = direction}
 
@@ -60,7 +60,7 @@ main = runGame Windowed (Box (V2 0 0) (V2 640 480)) $ do
 
     let ball = Ball{
       ballPos = V2 25 100,
-      dir = RightDown,
+      dir = (R, Down),
       radius = 5
     }
 
