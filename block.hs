@@ -27,7 +27,6 @@ update ball = do
   -- TODO 反射の実装
   unless escape $
     let nextBallP = move (ballPos ball) (dir ball)
-        -- willReflect = reflectable bar ball{ballPos = nextBallP}
         (direction, ballP)
           | isVerticalRef bar ball{ballPos = nextBallP} =
             case dir ball of
@@ -38,27 +37,8 @@ update ball = do
               (R, a) -> ((L, a), ballPos ball)
               (L, b) -> ((R, b), ballPos ball)
           | otherwise = (dir ball, nextBallP)
-        -- (direction, ballP) = if willReflect then
-        --   case  dir ball of
-        --     (R, Down) -> ((R,Up), ballPos ball)
-        --     (R, Up) -> ((L, Up), ballPos ball)
-        --     (L, Up) -> ((L, Down), ballPos ball)
-        --     (L, Down) -> ((R, Down), ballPos ball)
-        --   else (dir ball, nextBallP)
-    in update ball{ ballPos = ballP, dir = direction}
 
--- TODO reflectable をなんとかする
--- reflectable :: Bar -> Ball -> Bool
--- reflectable bar ball =
---   let (V2 barX barY) = barPos bar
---       (V2 ballX ballY) = ballPos ball
---       bl = barL bar
---       r = radius ball
---   in
---    barY <= ballY + r && ballY + r <= barY + 5
---     && barX <= ballX + r && ballX - r <= barX + bl
---     || ballX - r <= 0 || 640 <= ballX + r
---     || ballY - r <= 0 || 480 <= ballY + r
+    in update ball{ ballPos = ballP, dir = direction}
 
 isVerticalRef :: Bar -> Ball -> Bool
 isVerticalRef bar ball =
