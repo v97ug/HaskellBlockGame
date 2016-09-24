@@ -13,19 +13,13 @@ data Bar = Bar{
   barL :: Double
 }
 
--- -- TODO rをデータ型の中に入れる
--- r :: Double
--- r = 5
-
 update :: Ball -> Game ()
 update ball = do
   (V2 barx _) <- mousePosition
-  -- let (V2 barx _) = p
   let bar = Bar{barPos = V2 barx 400, barL = 60}
-  -- translate p $ color white $ thickness 4 $ circleOutline 16
   color cyan $ thickness 5 $ line [barPos bar, V2 (barx+60) 400]
 
-  color magenta $ thickness 3 $ translate (ballPos ball) $ circleOutline 10 -- 'thickness' sets the thickness of the lines.
+  color magenta $ thickness 3 $ translate (ballPos ball) $ circleOutline 10
 
   escape <- keyPress KeyEscape
   tick
