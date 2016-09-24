@@ -4,7 +4,8 @@ import Direction
 
 data Ball = Ball{
   ballPos :: Vec2,
-  dir :: Dir
+  dir :: Dir,
+  radius :: Double
 }
 
 data Bar = Bar{
@@ -12,9 +13,9 @@ data Bar = Bar{
   barL :: Double
 }
 
--- TODO rをデータ型の中に入れる
-r :: Double
-r = 5
+-- -- TODO rをデータ型の中に入れる
+-- r :: Double
+-- r = 5
 
 update :: Ball -> Game ()
 update ball = do
@@ -32,7 +33,7 @@ update ball = do
   -- TODO 反射の実装
   unless escape $
     let nextBallP = move (ballPos ball) (dir ball)
-        willReflect = reflectable bar nextBallP
+        willReflect = reflectable bar ball{ballPos = nextBallP}
         (direction, ballP) = if willReflect then
           case  dir ball of
             RightDown -> (RightUp, ballPos ball)
@@ -42,10 +43,12 @@ update ball = do
           else (dir ball, nextBallP)
     in update ball{ ballPos = ballP, dir = direction}
 
-reflectable :: Bar -> Vec2 -> Bool
-reflectable bar (V2 ballX ballY) =
+reflectable :: Bar -> Ball -> Bool
+reflectable bar ball =
   let (V2 barX barY) = barPos bar
+      (V2 ballX ballY) = ballPos ball
       bl = barL bar
+      r = radius ball
   in
    barY <= ballY + r && ballY + r <= barY + 5
     && barX <= ballX + r && ballX - r <= barX + bl
@@ -61,7 +64,8 @@ main = runGame Windowed (Box (V2 0 0) (V2 640 480)) $ do
 
     let ball = Ball{
       ballPos = V2 25 100,
-      dir = RightDown
+      dir = RightDown,
+      radius = 5
     }
 
     update ball
