@@ -2,7 +2,7 @@ import FreeGame
 import Direction
 -- import qualified Debug.Trace as D
 
-data State = State{
+data Ball = Ball{
   ballPos :: Vec2,
   dir :: Dir
 }
@@ -12,40 +12,35 @@ data Bar = Bar{
   barL :: Double
 }
 
--- barL = 60
+-- TODO rをデータ型の中に入れる
 r :: Double
 r = 5
 
-update :: State -> Game ()
-update state = do
+update :: Ball -> Game ()
+update ball = do
   (V2 barx _) <- mousePosition
   -- let (V2 barx _) = p
   let bar = Bar{barPos = V2 barx 400, barL = 60}
   -- translate p $ color white $ thickness 4 $ circleOutline 16
   color cyan $ thickness 5 $ line [barPos bar, V2 (barx+60) 400]
 
-  color magenta $ thickness 3 $ translate (ballPos state) $ circleOutline 10 -- 'thickness' sets the thickness of the lines.
+  color magenta $ thickness 3 $ translate (ballPos ball) $ circleOutline 10 -- 'thickness' sets the thickness of the lines.
 
   escape <- keyPress KeyEscape
   tick
 
-  -- 反射の実装
+  -- TODO 反射の実装
   unless escape $
-    let nextBallP = move (ballPos state) (dir state)
+    let nextBallP = move (ballPos ball) (dir ball)
         willReflect = reflectable bar nextBallP
         (direction, ballP) = if willReflect then
-          case  dir state of
-            RightDown -> (RightUp, ballPos state)
-            RightUp -> (LeftUp, ballPos state)
-            LeftUp -> (LeftDown, ballPos state)
-            LeftDown -> (RightDown, ballPos state)
-          else (dir state, nextBallP)
-        -- ballP = case direction of
-        --   RightDown -> toRightUp (ballPos state)
-        --   RightUp -> toLeftUp (ballPos state)
-        --   LeftUp -> toLeftDown (ballPos state)
-        --   LeftDown -> toRightDown (ballPos state)
-    in update state{ ballPos = ballP, dir = direction}
+          case  dir ball of
+            RightDown -> (RightUp, ballPos ball)
+            RightUp -> (LeftUp, ballPos ball)
+            LeftUp -> (LeftDown, ballPos ball)
+            LeftDown -> (RightDown, ballPos ball)
+          else (dir ball, nextBallP)
+    in update ball{ ballPos = ballP, dir = direction}
 
 reflectable :: Bar -> Vec2 -> Bool
 reflectable bar (V2 ballX ballY) =
@@ -64,10 +59,9 @@ main = runGame Windowed (Box (V2 0 0) (V2 640 480)) $ do
     clearColor black
     -- font <- loadFont "VL-PGothic-Regular.ttf"
 
-    let state = State{
+    let ball = Ball{
       ballPos = V2 25 100,
-      -- dir = toLeftUp
       dir = RightDown
     }
 
-    update state
+    update ball
