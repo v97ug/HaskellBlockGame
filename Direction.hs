@@ -4,7 +4,7 @@ import FreeGame
 
 data Horizontal = L | R deriving (Eq)
 data Vertical = Up | Down deriving (Eq)
-data Dir = RightDown | RightUp | LeftUp | LeftDown deriving (Eq)
+-- data Dir = RightDown | RightUp | LeftUp | LeftDown deriving (Eq)
 
 toRightDown :: Vec2 -> Vec2
 toRightDown (V2 x y) = V2 (x+2) (y+2)
