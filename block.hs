@@ -37,6 +37,8 @@ update ball = do
           else (dir ball, nextBallP)
     in update ball{ ballPos = ballP, dir = direction}
 
+-- TODO reflectable をなんとかする
+-- TODO (Right,Down)などのタプルにする
 reflectable :: Bar -> Ball -> Bool
 reflectable bar ball =
   let (V2 barX barY) = barPos bar
