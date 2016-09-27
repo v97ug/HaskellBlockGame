@@ -22,26 +22,10 @@ update ball block = do
   tick
 
   unless escape $
-    -- let nextBallP = move (ballPos ball) (dir ball)
-        -- nextBall
-        --   | isVerticalRef bar ball{ballPos = nextBallP} block =
-        --     case dir ball of
-        --       (a, Up) -> ball{dir = (a, Down)}
-        --       (b, Down) -> ball{dir = (b, Up)}
-        --   | isHorizontalRef bar ball{ballPos = nextBallP} block =
-        --     case dir ball of
-        --       (R, a) -> ball{dir = (L, a)}
-        --       (L, b) -> ball{dir = (R, b)}
-        --   | otherwise = ball{ballPos = nextBallP}
-
-          --前のballを渡す
-        -- (nextBall2, nextBlock) = contackBall ball{ballPos = nextBallP} block
     let (nextBall2, nextBlock) = reflectAndDeleteBlock bar ball block
-
     in update nextBall2 nextBlock
 
 
---TODO ここをよーく見よう
 reflectAndDeleteBlock :: Bar -> Ball -> Block -> (Ball, Block)
 reflectAndDeleteBlock bar ball block =
   let nextBall = ball{ballPos = move (ballPos ball) (dir ball)} in
@@ -90,59 +74,6 @@ isSideWall ball =
       r = radius ball
   in
     ballX - r <= 0 || 640 <= ballX + r
-
--- isVerticalRef :: Bar -> Ball -> Block -> Bool
--- isVerticalRef bar ball block =
---   let (V2 barX barY) = barPos bar
---       (V2 ballX ballY) = ballPos ball
---       (V2 blockX blockY) = blPos block
---       barLen = barL bar
---       blockLen = blLen block
---       r = radius ball
---   in
---     barY <= ballY + r && ballY + r <= barY + 5
---     && barX <= ballX + r && ballX - r <= barX + barLen
---     || ballY - r <= 0 || 480 <= ballY + r
---     ||  blockY <= ballY + r && ballY + r <= blockY + 5
---         && blockX <= ballX + r && ballX - r <= blockX + blockLen
---     ||  (blockY + blockLen) <= ballY + r && ballY + r <= (blockY + blockLen) + 5
---         && blockX <= ballX + r && ballX - r <= blockX + blockLen
---
--- isHorizontalRef :: Bar -> Ball -> Block ->Bool
--- isHorizontalRef bar ball block =
---   let (V2 ballX ballY) = ballPos ball
---       (V2 blockX blockY) = blPos block
---       blockLen = blLen block
---       r = radius ball
---   in
---     ballX - r <= 0 || 640 <= ballX + r
---     ||  blockY <= ballY + r && ballY + r <= blockY + blockLen
---         && blockX <= ballX + r && ballX - r <= blockX + 5
---     ||  blockY <= ballY + r && ballY + r <= blockY + blockLen
---         && (blockX + blockLen) <= ballX + r && ballX - r <= (blockX + blockLen) + 5
-
--- changeBlock :: Ball -> Block -> Block
--- changeBlock ball block =
---   let (V2 ballX ballY) = ballPos ball
---       (V2 blockX blockY) = blPos block
---       blockLen = blLen block
---       r = radius ball
---   in
---     if (blockY <= ballY + r && ballY + r <= blockY + blockLen
---        || blockY <= ballY - r && ballY - r <= blockY + blockLen)
---         && (blockX <= ballX - r && ballX - r <= blockX + blockLen
---        || blockX <= ballX + r && ballX + r <= blockX + blockLen)
---        then block{appear = False}
---        else block
-
--- stickContact :: Vec2 -> Double -> Ball -> Bool
--- stickContact (V2 stickX stickY) stickLen ball =
---   let (V2 ballX ballY) = ballPos ball
---       r = radius ball
---       thick = 5 -- 当たり判定の大きさ（棒の太さ）
---   in
---     stickY <= ballY + r && ballY + r <= stickY + thick
---     && stickX <= ballX + r && ballX + r <= stickX + stickLen
 
 makeBlocks :: Block -> Double -> [Block]
 makeBlocks block x

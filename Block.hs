@@ -2,7 +2,6 @@ module Block where
 
 import FreeGame
 import Ball
-import Direction
 
 data Block = Block{
   blPos :: Vec2,
@@ -23,19 +22,19 @@ drawBlock block = do
     in
       when appr $ polygon [blPos block, V2 blX' blockY, V2 blX' blY', V2 blockX blY']
 
-contackBall :: Ball -> Block -> (Ball,Block)
-contackBall ball block
-  | isVerticalBlock ball block =
-    case dir ball of
-      (a, Up) -> (ball{dir = (a, Down)}, block{appear = False})
-      (b, Down) -> (ball{dir =(b, Up)}, block{appear = False})
-  | isHorizontalBlock ball block =
-    case dir ball of
-      (R, a) -> (ball{dir = (L, a)}, block{appear = False})
-      (L, b) -> (ball{dir = (R, b)}, block{appear = False})
-  | otherwise = (ball{ballPos = nextBallP}, block)
-      where nextBallP = move (ballPos ball) (dir ball)
-
+-- contackBall :: Ball -> Block -> (Ball,Block)
+-- contackBall ball block
+--   | isVerticalBlock ball block =
+--     case dir ball of
+--       (a, Up) -> (ball{dir = (a, Down)}, block{appear = False})
+--       (b, Down) -> (ball{dir =(b, Up)}, block{appear = False})
+--   | isHorizontalBlock ball block =
+--     case dir ball of
+--       (R, a) -> (ball{dir = (L, a)}, block{appear = False})
+--       (L, b) -> (ball{dir = (R, b)}, block{appear = False})
+--   | otherwise = (ball{ballPos = nextBallP}, block)
+--       where nextBallP = move (ballPos ball) (dir ball)
+--
 isVerticalBlock :: Ball -> Block -> Bool
 isVerticalBlock ball block =
   let (V2 blockX blockY) = blPos block
