@@ -27,29 +27,25 @@ update ball block = do
 
 
 reflectAndDeleteBlock :: Bar -> Ball -> Block -> (Ball, Block)
-reflectAndDeleteBlock bar ball block =
-  let nextBall = ball{ballPos = move (ballPos ball) (dir ball)} in
-  if isBar bar nextBall then
+reflectAndDeleteBlock bar ball block
+  | isBar bar nextBall || isUpDownWall nextBall =
     case dir ball of
       (a, Up) -> (ball{dir = (a, Down)}, block)
       (b, Down) -> (ball{dir =(b, Up)}, block)
-  else if isSideWall nextBall then
+  | isSideWall nextBall =
     case dir ball of
       (R, a) -> (ball{dir = (L, a)}, block)
       (L, b) -> (ball{dir = (R, b)}, block)
-  else if isUpDownWall nextBall then
-    case dir ball of
-      (a, Up) -> (ball{dir = (a, Down)}, block)
-      (b, Down) -> (ball{dir =(b, Up)}, block)
-  else if isVerticalBlock nextBall block then
+  | isVerticalBlock nextBall block =
     case dir ball of
       (a, Up) -> (ball{dir = (a, Down)}, block{appear = False})
       (b, Down) -> (ball{dir =(b, Up)}, block{appear = False})
-  else if isHorizontalBlock nextBall block then
+  | isHorizontalBlock nextBall block =
     case dir ball of
       (R, a) -> (ball{dir = (L, a)}, block{appear = False})
       (L, b) -> (ball{dir = (R, b)}, block{appear = False})
-  else (nextBall, block)
+  | otherwise = (nextBall, block)
+  where nextBall = ball{ballPos = moveBall ball}
 
 isBar :: Bar -> Ball -> Bool
 isBar bar ball =

@@ -1,8 +1,4 @@
-module Direction
-( Horizontal(..)
-, Vertical (..)
-, move
-) where
+module Direction where
 
 import FreeGame
 
