@@ -9,42 +9,44 @@ data Bar = Bar{
   barL :: Double
 }
 
--- update :: Ball -> [Block] -> Game ()
-update ball block = do
+update :: Ball -> [Block] -> Game ()
+update ball blocks = do
   (V2 barx _) <- mousePosition
   let bar = Bar{barPos = V2 barx 400, barL = 60}
   color cyan $ thickness 5 $ line [barPos bar, V2 (barx+60) 400]
 
   color magenta $ thickness 3 $ translate (ballPos ball) $ circleOutline 10
 
-  drawBlock block
+  drawBlocks blocks
+
   escape <- keyPress KeyEscape
   tick
 
   unless escape $
-    let (nextBall2, nextBlock) = reflectAndDeleteBlock bar ball block
-    in update nextBall2 nextBlock
+    let nextDirBall = reflectBarWall bar ball
+        (nextBall, nextBlocks) = refAndDelBlock nextDirBall blocks
+    in update nextBall nextBlocks
 
 
-reflectAndDeleteBlock :: Bar -> Ball -> Block -> (Ball, Block)
-reflectAndDeleteBlock bar ball block
+reflectBarWall :: Bar -> Ball -> Ball
+reflectBarWall bar ball
   | isBar bar nextBall || isUpDownWall nextBall =
     case dir ball of
-      (a, Up) -> (ball{dir = (a, Down)}, block)
-      (b, Down) -> (ball{dir =(b, Up)}, block)
+      (a, Up) -> ball{dir = (a, Down)}
+      (b, Down) -> ball{dir =(b, Up)}
   | isSideWall nextBall =
     case dir ball of
-      (R, a) -> (ball{dir = (L, a)}, block)
-      (L, b) -> (ball{dir = (R, b)}, block)
-  | isVerticalBlock nextBall block =
-    case dir ball of
-      (a, Up) -> (ball{dir = (a, Down)}, block{appear = False})
-      (b, Down) -> (ball{dir =(b, Up)}, block{appear = False})
-  | isHorizontalBlock nextBall block =
-    case dir ball of
-      (R, a) -> (ball{dir = (L, a)}, block{appear = False})
-      (L, b) -> (ball{dir = (R, b)}, block{appear = False})
-  | otherwise = (nextBall, block)
+      (R, a) -> ball{dir = (L, a)}
+      (L, b) -> ball{dir = (R, b)}
+  -- | isVerticalBlock nextBall block =
+  --   case dir ball of
+  --     (a, Up) -> (ball{dir = (a, Down)}, block{appear = False})
+  --     (b, Down) -> (ball{dir =(b, Up)}, block{appear = False})
+  -- | isHorizontalBlock nextBall block =
+  --   case dir ball of
+  --     (R, a) -> (ball{dir = (L, a)}, block{appear = False})
+  --     (L, b) -> (ball{dir = (R, b)}, block{appear = False})
+  | otherwise = ball
   where nextBall = ball{ballPos = moveBall ball}
 
 isBar :: Bar -> Ball -> Bool
@@ -71,6 +73,19 @@ isSideWall ball =
   in
     ballX - r <= 0 || 640 <= ballX + r
 
+refAndDelBlock ::  Ball -> [Block] -> (Ball, [Block])
+refAndDelBlock ball blocks
+  | isVerticalBlocks nextBall blocks =
+    case dir ball of
+      (a, Up) -> (ball{dir = (a, Down)}, blockDel ball blocks)
+      (b, Down) -> (ball{dir =(b, Up)}, blockDel ball blocks)
+  | isHorizontalBlocks nextBall blocks =
+    case dir ball of
+      (R, a) -> (ball{dir = (L, a)}, blockDel ball blocks)
+      (L, b) -> (ball{dir = (R, b)}, blockDel ball blocks)
+  | otherwise = (nextBall, blocks)
+  where nextBall = ball{ballPos = moveBall ball}
+
 makeBlocks :: Block -> Double -> [Block]
 makeBlocks block x
  | x > 600 = []
@@ -93,5 +108,5 @@ main = runGame Windowed (Box (V2 0 0) (V2 640 480)) $ do
       appear = True
     }
 
-    update ball block
-    -- update ball (makeBlocks block)
+    -- update ball block
+    update ball (makeBlocks block 100)
